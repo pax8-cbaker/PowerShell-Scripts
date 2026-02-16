@@ -3,6 +3,7 @@ Clear-Host
 $importSourcePath = (Read-Host "Enter the path for the source tenant export (e.g., C:\Users\CalebBaker\OneDrive - PAX8\Desktop\source.xlsx)").Trim('"')
 $importDestinationPath = (Read-Host "Enter the path for the destination tenant export (e.g., C:\Users\CalebBaker\OneDrive - PAX8\Desktop\destination.xlsx)").Trim('"')
 $resultsPath = (Read-Host "Enter the path for the comparison results export (e.g., C:\Users\CalebBaker\OneDrive - PAX8\Desktop\Comparison_Results.xlsx)").Trim('"')
+Clear-Host
 
 # Find duplicate users based on DisplayName
 Write-Progress -Activity "Comparing tenants" -Status "Comparing users..." -PercentComplete 25
@@ -44,9 +45,12 @@ $resultsMailboxes = foreach ($duplicateMailbox in $duplicateMbxsInDestination) {
             DisplayName = $match.DisplayName
             DestinationPrimarySmtpAddress = $match.PrimaryEmail
             MailboxType = $match.RecipientType
-            Size = $match."Size(GB)"
-            LitigationHoldEnabled = $match.LitigationHold
-            ArchiveEnabled = $match.ArchiveEnabled
+            DestinationSizeinGB = $match."Size(GB)"
+            CombinedSizeinGB = $match."Size(GB)" + ($sourceFullMailboxes | Where-Object { $_.DisplayName -eq $duplicateMailbox } | Select-Object -ExpandProperty "Size(GB)")
+            SourceLitigationHoldEnabled = ($sourceFullMailboxes | Where-Object { $_.DisplayName -eq $duplicateMailbox } | Select-Object -ExpandProperty LitigationHold)
+            DestinationLitigationHoldEnabled = $match.LitigationHold
+            SourceArchiveEnabled = ($sourceFullMailboxes | Where-Object { $_.DisplayName -eq $duplicateMailbox } | Select-Object -ExpandProperty ArchiveEnabled)
+            DestinationArchiveEnabled = $match.ArchiveEnabled
         }
     }
 }
