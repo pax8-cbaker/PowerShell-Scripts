@@ -1,7 +1,7 @@
 #-------------------------------------------------------------#
 # Assign phone numbers to users
 Connect-MicrosoftTeams
-$numbers = Import-CSV -Path "C:\Users\CalebBaker\OneDrive - PAX8\Documents\02 - Teams Phone\UV&S Technology - TEC\AssignNumbers-TEC.csv"
+$numbers = Import-CSV -Path "C:\Users\CalebBaker\OneDrive - PAX8\Documents\02 - Teams Phone\UV&S Technology - TEC\Porting\AssignNumbers-TEC.csv"
 
 foreach ($number in $numbers) {
     Write-Host "Assigning phone number $($number.DID) to user $($number.UPN) with location ID $($number.LocaID)" -ForegroundColor Cyan
@@ -32,7 +32,7 @@ foreach ($assignment in $policyAssignments) {
 
 #-------------------------------------------------------------#
 # Unassign phone numbers from users
-$usersToUnassign = Import-CSV -Path "C:\Users\CalebBaker\OneDrive - PAX8\Documents\02 - Teams Phone\UnassignNumbers-TEC.csv"
+$usersToUnassign = Import-CSV -Path "C:\Users\CalebBaker\OneDrive - PAX8\Documents\02 - Teams Phone\UV&S Technology - TEC\Porting\RemoveTempNumbers-TEC.csv"
 
 foreach ($user in $usersToUnassign) {
     Write-Host "Unassigning phone number from user $($user.UPN)" -ForegroundColor Cyan

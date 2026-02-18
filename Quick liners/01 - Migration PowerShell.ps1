@@ -17,19 +17,19 @@ Import-CSV "C:\Users\Administrator\Desktop\smtp.csv" | % { Set-AdUser -Identity 
 # Update UPNs and Primary SMTP via Microsoft Graph
 Connect-MgGraph -Scopes user.readwrite.all
 
-Import-Csv "C:\Users\CalebBaker\OneDrive - PAX8\Documents\01 - Migrations\Planters\UPNChange.csv" | ForEach-Object {
+Import-Csv "C:\Users\CalebBaker\OneDrive - PAX8\Documents\01 - Migrations\02 - Email & Identity\AH inc\upnChange1to1.csv" | ForEach-Object {
     $body = @{
         mail   = $_.NewUPN
         userPrincipalName = $_.NewUPN
     } | ConvertTo-Json
 
-    Write-Host "Updating user: $($_.UserID) to new UPN: $($_.NewUPN)" -ForegroundColor Green
+    Write-Host "Updating user: $($_.UserID) to new UPN: $($_.NewUPN)" -ForegroundColor Yellow
     Try {
         Invoke-MgGraphRequest -Method PATCH -Uri "https://graph.microsoft.com/v1.0/users/$($_.UserID)" -Body $body | Out-Null
-        Write-Host "Successfully updated user: $($_.UserID)" -ForegroundColor Green
+        Write-Host "Successfully updated user: $($_.UserID)`n" -ForegroundColor Green
     }
     Catch {
-        Write-Host "Failed to update user: $($_.UserID). Error: $_" -ForegroundColor Red
+        Write-Host "Failed to update user: $($_.UserID). Error: $_`n" -ForegroundColor Red
     }
 }
 
@@ -73,14 +73,14 @@ Get-SPOSite -IncludePersonalSite $true -Limit all -Filter "Url -like '-my.sharep
 #-------------------------------------------------------------#
 # Manage Exchange Online protocols for users
 Connect-ExchangeOnline
-$users = Import-Csv "C:\Users\CalebBaker\OneDrive - PAX8\Documents\01 - Migrations\Planters\Users.csv"
+$users = Import-Csv "C:\Users\CalebBaker\OneDrive - PAX8\Documents\01 - Migrations\02 - Email & Identity\AH inc\users.csv"
 #$allUsers = Get-Mailbox
 
 foreach ($user in $users) {
     Write-Host "Configuring protocols for user: $($user.UPN)" -ForegroundColor Cyan
     Try {
         # Disable all protocols except OWA
-        #Set-CASMailbox -Identity $user.UPN -PopEnabled $False -ImapEnabled $False -MAPIEnabled $False -ActiveSyncEnabled $False -EwsEnabled $False -OWAEnabled $True -ErrorAction Stop
+        Set-CASMailbox -Identity $user.UPN -PopEnabled $False -ImapEnabled $False -MAPIEnabled $False -ActiveSyncEnabled $False -EwsEnabled $False -OWAEnabled $True -ErrorAction Stop
         # Enable all protocols
         #Set-CASMailbox -Identity $user.UPN -PopEnabled $True -ImapEnabled $True -MAPIEnabled $True -ActiveSyncEnabled $True -EwsEnabled $True -OWAEnabled $True -ErrorAction Stop
         Write-Host "Successfully configured protocols for user: $($user.UPN)`n" -ForegroundColor Green
